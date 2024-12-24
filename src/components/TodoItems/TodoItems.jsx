@@ -52,19 +52,9 @@ export const TodoItems = () => {
   };
 
   const todoItemsElements = sortedItems ? sortedItems.map((item, index) => {
-    return <TodoItem
-          key={item.id}
-          title={item.title}
-          checked={item.isDone}
-          id={item.id}
-          priority={item.priority} />;
+    return <TodoItem key={item.id} title={item.title} checked={item.isDone} id={item.id} priority={item.priority} />;
     }) : filteredBySearchItems.map((item, index) => {
-      return <TodoItem
-          key={item.id}
-          title={item.title}
-          checked={item.isDone}
-          id={item.id}
-          priority={item.priority} />;
+      return <TodoItem key={item.id} title={item.title} checked={item.isDone} id={item.id} priority={item.priority} />;
   });
 
   return (
