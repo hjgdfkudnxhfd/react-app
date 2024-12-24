@@ -1,7 +1,10 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styled, { css } from "styled-components"
 import {TodoItemContainer} from './TodoItemContainer'
 import {TodoItemCheckbox} from './TodoItemCheckbox';
+import { useDeleteTodoItem } from '../../data/hooks/useData';
+import { PriorityInput } from './PriorityInput';
+
 
 const checkedCss = css`
   color: #B5B5BA;
@@ -10,7 +13,9 @@ const checkedCss = css`
 
 const Title = styled.span(props => {
   return `
+    width: 60%;
     font-size: 15px;
+    overflow-wrap: break-word;
     ${props.checked ? checkedCss : ''};
   `;
 })
@@ -26,14 +31,38 @@ const Delete = styled.span`
   cursor: pointer;
 `;
 
-export const TodoItem = ({title, checked}) => {
+export const TodoItem = ({ title, checked, id, priority }) => {
+  const getColor = (priority) => {
+      switch (priority) {
+          case 1:
+              return '#EF9A9A'; // Светло-зеленый
+          case 2:
+              return '#EFC99A'; // Светло-желтый
+          case 3:
+              return '#ECEF9A'; // Светло-красный
+          default:
+              return '#A8EF9A'; // Белый по умолчанию
+      }
+  };
+
+  const [color, setColor] = useState(priority === '1' ? '#EF9A9A' : priority === '2' ? '#EFC99A' : priority === '3' ? '#ECEF9A' : '#A8EF9A');
+
+  const { mutate } = useDeleteTodoItem();
+
+  const onClickDeleteHandler = () => {
+      if (confirm(`Удалить элемент ${title}?`)) {
+          mutate({ id });
+      }
+  };
+
   return (
-    <TodoItemContainer>
-      <TodoItemCheckbox checked={checked} />
+    <TodoItemContainer style={{ backgroundColor:color }}>
+      <TodoItemCheckbox checked={checked} disabled={false} id={id} priority={priority} />
+      <PriorityInput checked={checked} id={id} priority={priority} setColor={setColor} />
       <Title checked={checked}>
         {title}
       </Title>
-      <Delete />
+      <Delete onClick={onClickDeleteHandler} />
     </TodoItemContainer>
-  )
+  );
 }
