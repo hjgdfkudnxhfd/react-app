@@ -35,13 +35,13 @@ export const TodoItem = ({ title, checked, id, priority }) => {
   const getColor = (priority) => {
       switch (priority) {
           case 1:
-              return '#EF9A9A'; // Светло-зеленый
+              return '#EF9A9A';
           case 2:
-              return '#EFC99A'; // Светло-желтый
+              return '#EFC99A';
           case 3:
-              return '#ECEF9A'; // Светло-красный
+              return '#ECEF9A'; 
           default:
-              return '#A8EF9A'; // Белый по умолчанию
+              return '#A8EF9A'; 
       }
   };
 
