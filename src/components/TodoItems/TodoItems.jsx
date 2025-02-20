@@ -1,26 +1,16 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {TodoItemsContainer} from './TodoItemsContainer';
 import {NewTodoItem} from '../TodoItem/NewTodoItem';
 import {TodoItem} from '../TodoItem/TodoItem';
 import {useData} from '../../data/hooks/useData';
 import {SearchInput} from './components/SearchInput';
+import {SortButton} from './components/SortButtons';
 
 export const TodoItems = () => {
   const [searchValue, setSearchValue] = useState('');
-  const [sortedItems, setSortedItems] = useState(null);
+  const [sortMethod, setSortMethod] = useState('');
 
   const {data: todoItems, isLoading} = useData();
-
-  useEffect(() => {
-    if (sortedItems) {
-        const filteredBySearchItems = todoItems.filter((todoItem) => {
-          const clearedItemTitle = todoItem.title.replace(/\s+/g, '').toLowerCase();
-          const clearedSearchValue = searchValue.replace(/\s+/g, '').toLowerCase();
-          return clearedItemTitle.includes(clearedSearchValue) || clearedSearchValue.length < 3;
-        });
-        setSortedItems(filteredBySearchItems.sort((a, b) => a.priority - b.priority));
-    }
-  }, [todoItems]);
 
   if (!todoItems || isLoading) {
     return (
@@ -31,27 +21,36 @@ export const TodoItems = () => {
   }
 
   const filteredBySearchItems = todoItems.filter((todoItem) => {
-    const clearedItemTitle = todoItem.title.replace(/\s+/g, '').toLowerCase();
-    const clearedSearchValue = searchValue.replace(/\s+/g, '').toLowerCase();
-    return clearedItemTitle.includes(clearedSearchValue) || clearedSearchValue.length < 3;
-  });
+    const clearedTodoItemTitle = todoItem.title.trim().toLowerCase();
+    const clearedSearchValue = searchValue.trim().toLowerCase();
+    const isSearched = clearedTodoItemTitle.indexOf(clearedSearchValue) !== -1 || clearedSearchValue.length < 3;
+    return isSearched;
+  })
 
-  const onClickHandler = () => {
-    setSortedItems(filteredBySearchItems.sort((a, b) => a.priority - b.priority));
+  const sortedElements = () =>{
+    if(sortMethod === 'asc'){
+      return filteredBySearchItems.sort((item1, item2) => item1.priority - item2.priority);
+    } else if(sortMethod === 'desc'){
+      return filteredBySearchItems.sort((item1, item2) => item2.priority - item1.priority);
+    } else {
+      return filteredBySearchItems;
+    }
   };
 
-  const todoItemsElements = sortedItems ? sortedItems.map((item, index) => {
+  const todoItemsElements = sortedElements().map((item, index) => {
     return <TodoItem key={item.id} title={item.title} checked={item.isDone} id={item.id} priority={item.priority} />;
-    }) : filteredBySearchItems.map((item, index) => {
-      return <TodoItem key={item.id} title={item.title} checked={item.isDone} id={item.id} priority={item.priority} />;
   });
 
   return (
     <TodoItemsContainer>
-      <SearchInput value={searchValue} setValue={setSearchValue} setSortedItems={setSortedItems} />
-      <button onClick={onClickHandler}>Сортировка</button>
-        {todoItemsElements}
-        <NewTodoItem />
+      
+      <div><SearchInput value={searchValue} setValue={setSearchValue}/>
+        <SortButton src={'assets/images/png/min-max-sort.png'} alt="Сортировка по возрастанию" onClick={() => setSortMethod('asc')} />
+        <SortButton src={'assets/images/png/max-min-sort.png'} alt="Сортировка по убыванию" onClick={() => setSortMethod('desc')} />
+        <SortButton src={'assets/images/png/reset.png'} alt="Без сортировки" onClick={() => setSortMethod('')} />
+      </div>
+      {todoItemsElements}
+      <NewTodoItem />
     </TodoItemsContainer>
   )
 }

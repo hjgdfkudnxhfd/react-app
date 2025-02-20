@@ -33,25 +33,30 @@ export const LocalStorage = {
     });
   },
 
-  deleteTodoItemFromLocalStorage: (todoItemId) => {
+  deleteTodoItemFromLocalStorage: (deleteTodoItemId) => {
     return new Promise((resolve, reject) => {
-        LocalStorage.getTodoItemsFromLocalStorage().then((todoItems) => {
-            const newTodoItems = todoItems.filter(item => item.id !== todoItemId);
-            localStorage.setItem(TODO_ITEMS_LOCAL_STORAGE_KEY, JSON.stringify(newTodoItems));
-            resolve();
-        })
+      LocalStorage.getTodoItemsFromLocalStorage().then((todoItems) => {
+        const newTodoItems = todoItems.filter((todoItem) => {
+          return todoItem.id !== deleteTodoItemId;
+        });
+        localStorage.setItem(TODO_ITEMS_LOCAL_STORAGE_KEY, JSON.stringify(newTodoItems));
+        resolve();
+      })
     });
   },
 
-  updateTodoItemInLocalStorage: (id, checked, priority) => {
+  updateTodoItemIntoLocalStorage: (updatedId, checked, priority) => {
     return new Promise((resolve, reject) => {
-        LocalStorage.getTodoItemsFromLocalStorage().then((todoItems) => {
-            const newTodoItems = todoItems.map(item =>
-                item.id === id ? {id: item.id, title: item.title, isDone: checked, priority: priority} : item
-            );
-            localStorage.setItem(TODO_ITEMS_LOCAL_STORAGE_KEY, JSON.stringify(newTodoItems));
-            resolve();
-        })
+      LocalStorage.getTodoItemsFromLocalStorage().then((todoItems) => {
+        const newTodoItems = todoItems.map(todoItem => todoItem.id === updatedId ? {
+              id: todoItem.id,
+              title: todoItem.title,
+              isDone: checked,
+              priority: priority
+            } : todoItem );
+        localStorage.setItem(TODO_ITEMS_LOCAL_STORAGE_KEY, JSON.stringify(newTodoItems));
+        resolve();
+      })
     });
   }
 }
